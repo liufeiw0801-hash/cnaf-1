@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-orbitron: "Orbitron", sans-serif;
+}
+
+/* Global styles from original app */
+body {
+    background-color: #000;
+    margin: 0;
+    overflow: hidden;
+    color: #ff3333;
+}
+
+canvas {
+    filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.5));
+}

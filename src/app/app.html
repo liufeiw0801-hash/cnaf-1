@@ -1,0 +1,46 @@
+<div id="video-bg-container" class="fixed inset-0 -z-20 overflow-hidden bg-black">
+  <video #inputVideo class="scale-x-[-1] w-full h-full object-cover brightness-[0.4] contrast-[1.1] blur-[2px]" autoplay playsinline></video>
+</div>
+
+<div class="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.2)_0%,rgba(0,0,0,0.6)_100%)] -z-10 pointer-events-none"></div>
+
+<div class="absolute top-[50px] left-[50px] border-l-4 border-red-600 pl-5 pointer-events-none z-10">
+  <h1 class="italic font-black text-[2.8rem] text-white drop-shadow-[0_0_10px_rgba(255,0,0,0.5)]">智慧青春·红色航油</h1>
+  <p class="text-xs tracking-[0.3em] opacity-70">INTELLIGENT YOUTH · RED AVIATION FUEL</p>
+</div>
+
+<div class="fixed bottom-10 left-10 bg-black/60 border border-red-600/30 p-5 backdrop-blur-sm z-20 min-w-[240px]">
+  <div class="mb-4 text-[11px] font-bold text-red-500 tracking-widest border-b border-red-900/40 pb-2">全息指令</div>
+  <div class="flex items-center mb-2.5 text-[13px] text-white/90">
+    <span class="w-20 text-red-500 font-bold text-[11px] font-orbitron">右手张掌</span> <span>放大系统</span>
+  </div>
+  <div class="flex items-center mb-2.5 text-[13px] text-white/90">
+    <span class="w-20 text-red-500 font-bold text-[11px] font-orbitron">右手握拳</span> <span>缩小 / 关闭相册</span>
+  </div>
+  <div class="flex items-center mb-2.5 text-[13px] text-white/90">
+    <span class="w-20 text-red-500 font-bold text-[11px] font-orbitron">左手平移</span> <span>拖拽全息图</span>
+  </div>
+  <div class="flex items-center mb-2.5 text-[13px] text-white/90">
+    <span class="w-20 text-red-500 font-bold text-[11px] font-orbitron">单指悬停</span> <span>触发节点(1.0s)</span>
+  </div>
+</div>
+
+<div class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-red-900/40 px-10 py-2 border border-red-600/40 font-bold text-white tracking-[2px] backdrop-blur-[4px] z-20">
+  {{ statusMessage() }}
+</div>
+
+<div id="map-wrapper" class="flex justify-center items-center pointer-events-none h-screen w-screen">
+  <canvas #mapCanvas></canvas>
+</div>
+
+@if (isAlbumOpen()) {
+  <div class="fixed inset-0 bg-black/85 flex justify-center items-center z-[1000] backdrop-blur-[10px]">
+    <div class="w-[700px] bg-red-950/70 border border-red-600/40 p-[50px] relative shadow-[0_0_60px_rgba(255,0,0,0.3)] pointer-events-auto">
+      <div class="absolute top-5 right-[25px] text-3xl cursor-pointer text-red-500" (click)="closeAlbum()">&times;</div>
+      <img [src]="albumImg()" class="w-full h-80 object-cover mb-8 border border-red-900/50" referrerpolicy="no-referrer">
+      <h2 class="text-4xl font-black mb-4 text-white tracking-widest">{{ albumTitle() }}</h2>
+      <div class="h-1 w-20 bg-red-600 mb-6"></div>
+      <p class="text-red-100/60 leading-relaxed italic text-lg">红色航油·智慧建设成果数据检索中...</p>
+    </div>
+  </div>
+}

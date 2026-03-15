@@ -1,0 +1,7 @@
+{
+  "name": "智慧青春·红色航油 - 交互全息系统",
+  "description": "基于MediaPipe手势识别的交互式红色航油全息地图系统，展示智慧建设成果。",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
