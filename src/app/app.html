@@ -36,8 +36,8 @@
 @if (isAlbumOpen()) {
   <div class="fixed inset-0 bg-black/85 flex justify-center items-center z-[1000] backdrop-blur-[10px]">
     <div class="w-[700px] bg-red-950/70 border border-red-600/40 p-[50px] relative shadow-[0_0_60px_rgba(255,0,0,0.3)] pointer-events-auto">
-      <div class="absolute top-5 right-[25px] text-3xl cursor-pointer text-red-500" (click)="closeAlbum()">&times;</div>
-      <img [src]="albumImg()" class="w-full h-80 object-cover mb-8 border border-red-900/50" referrerpolicy="no-referrer">
+      <button class="absolute top-5 right-[25px] text-3xl cursor-pointer text-red-500 bg-transparent border-none" (click)="closeAlbum()" aria-label="关闭相册">&times;</button>
+      <img [src]="albumImg()" class="w-full h-80 object-cover mb-8 border border-red-900/50" referrerpolicy="no-referrer" [alt]="albumTitle() + ' 建设成果展示'">
       <h2 class="text-4xl font-black mb-4 text-white tracking-widest">{{ albumTitle() }}</h2>
       <div class="h-1 w-20 bg-red-600 mb-6"></div>
       <p class="text-red-100/60 leading-relaxed italic text-lg">红色航油·智慧建设成果数据检索中...</p>

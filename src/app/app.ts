@@ -1,15 +1,25 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild, signal, computed, AfterViewInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild, signal, AfterViewInit, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 
 // We'll use dynamic imports for MediaPipe to avoid SSR issues if any, 
 // though this app is configured for SSR, MediaPipe is browser-only.
-// In a real app, we'd wrap this in isPlatformBrowser checks.
 
 interface City {
   id: number;
   name: string;
   lng: number;
   lat: number;
+}
+
+interface MapFeature {
+  geometry: {
+    type: string;
+    coordinates: unknown[];
+  };
+}
+
+interface MapData {
+  features: MapFeature[];
 }
 
 @Component({
@@ -30,7 +40,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   albumImg = signal('');
   
   private ctx!: CanvasRenderingContext2D;
-  private mapData: any = null;
+  private mapData: MapData | null = null;
   private systemScale = 1.0;
   private offsetX = 0;
   private offsetY = 0;
@@ -63,23 +73,36 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   private animationFrameId: number | null = null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private camera: any = null;
+  private isBrowser: boolean;
+  private platformId = inject(PLATFORM_ID);
+
+  constructor() {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngOnInit() {
-    this.fetchMapData();
+    if (this.isBrowser) {
+      this.fetchMapData();
+    }
   }
 
   ngAfterViewInit() {
-    this.ctx = this.mapCanvas.nativeElement.getContext('2d')!;
-    this.resize();
-    window.addEventListener('resize', () => this.resize());
-    this.initMediaPipe();
-    this.render();
+    if (this.isBrowser) {
+      this.ctx = this.mapCanvas.nativeElement.getContext('2d')!;
+      this.resize();
+      window.addEventListener('resize', () => this.resize());
+      this.initMediaPipe();
+      this.render();
+    }
   }
 
   ngOnDestroy() {
     if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
-    if (this.camera) this.camera.stop();
+    if (this.camera && typeof (this.camera as Record<string, unknown>)['stop'] === 'function') {
+      (this.camera as { stop: () => void }).stop();
+    }
   }
 
   private async fetchMapData() {
@@ -87,7 +110,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
       const response = await fetch('https://geojson.cn/api/china/china.json');
       this.mapData = await response.json();
       this.statusMessage.set('神经链路已建立');
-    } catch (e) {
+    } catch {
       this.statusMessage.set('数据链路上行错误');
     }
   }
@@ -131,11 +154,14 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     this.camera.start();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private onResults(results: any) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let lh: any = null, rh: any = null;
-    if (results.multiHandLandmarks) {
+    if (results.multiHandLandmarks && results.multiHandedness) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       results.multiHandLandmarks.forEach((lm: any, i: number) => {
-        if (results.multiHandedness[i].label === 'Left') rh = lm; else lh = lm;
+        if (results.multiHandedness && results.multiHandedness[i].label === 'Left') rh = lm; else lh = lm;
       });
     }
 
@@ -281,10 +307,11 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     this.ctx.shadowBlur = blur;
     this.ctx.shadowColor = color;
     if (this.mapData) {
-      this.mapData.features.forEach((f: any) => {
+      this.mapData.features.forEach((f: MapFeature) => {
         this.ctx.beginPath();
         const coords = f.geometry.coordinates;
         if (f.geometry.type === 'Polygon') this.renderRings(coords, w, h);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         else coords.forEach((poly: any) => this.renderRings(poly, w, h));
         this.ctx.stroke();
       });
@@ -292,9 +319,10 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     this.ctx.restore();
   }
 
-  private renderRings(rings: any[], w: number, h: number) {
+  private renderRings(rings: unknown[], w: number, h: number) {
     rings.forEach(ring => {
-      ring.forEach((c: any, i: number) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (ring as any[]).forEach((c, i) => {
         const p = this.project(c[0], c[1], w, h);
         if (i === 0) this.ctx.moveTo(p.x, p.y); else this.ctx.lineTo(p.x, p.y);
       });
